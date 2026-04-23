@@ -1,0 +1,768 @@
+================================================================================
+DASHBOARD DATA EXTRACT — Movilidad Medellín
+Generated: 2026-04-23
+Source: reto4 project (dashboard.py + processed CSVs)
+Encoding: UTF-8
+================================================================================
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 1 — DASHBOARD.PY: UI TEXT, LABELS, TITLES, AND HARDCODED VALUES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAGE CONFIG
+  page_title         : "Movilidad Medellin"
+  page_icon          : 🚦
+  layout             : wide
+  initial_sidebar_state : expanded
+
+MAIN TITLE (st.title)
+  "Dashboard de Movilidad — Medellín"
+
+MAIN SUBTITLE (st.markdown)
+  "Análisis integrado del Índice de Criticidad Vial (ICV) sobre velocidad,
+   intensidad y ocupación vehicular."
+
+SIDEBAR BRAND BLOCK
+  Title  : "🚦 Movilidad Medellín"
+  Subtitle: "Panel de análisis vial · Jul. 2020"
+
+SIDEBAR NAVIGATION LABEL
+  "Navegación"
+
+SIDEBAR CAPTION
+  "📊 Alcaldía de Medellín · Velocidad 2020 · Aforos 2018 · SIMM 2021"
+
+FOOTER CAPTION
+  "Desarrollado para el Reto de Movilidad Urbana de Medellín · Datos: Alcaldía de Medellín"
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION OPTIONS (sidebar navigation radio)
+────────────────────────────────────────────────────────────────────────────────
+  1. Corredores
+  2. Comunas
+  3. Hotspots
+  4. Patrones Temporales
+  5. Tendencia Metro
+  6. Mapa de Calor Vial
+  7. Velocidad y Flujo
+  8. Anomalías de Congestión
+
+────────────────────────────────────────────────────────────────────────────────
+KPI CARDS (st.metric — global, no filter applied)
+────────────────────────────────────────────────────────────────────────────────
+  KPI 1 label : "ICV promedio de ciudad"
+  KPI 1 value : "{icv_prom:.1f} / 100"   [computed from master["icv"].mean()]
+
+  KPI 2 label : "Corredor más crítico"
+  KPI 2 value : top corredor name
+  KPI 2 delta : "ICV {top1['icv_medio']:.1f}"
+
+  KPI 3 label : "Hora más crítica"
+  KPI 3 value : "{hora_critica}:00 h"   [hour with highest mean ICV]
+
+  KPI 4 label : "Hotspots detectados"
+  KPI 4 value : "{n_hotspots:,}"
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 1 — CORREDORES (st.header / chart titles / column labels)
+────────────────────────────────────────────────────────────────────────────────
+  st.header    : "Top 10 Corredores Criticos"
+  st.header    : "Top 15 Corredores Criticos"   [second header, same section]
+
+  Selectbox label   : "Filtrar por Comuna"
+  Selectbox help    : "Selecciona una comuna para ver solo los corredores de esa zona"
+
+  Dataframe column labels:
+    "Rank"          (NumberColumn, format="%d")
+    "Corredor"      (text)
+    "ICV Medio"     (ProgressColumn, min=0, max=100, format="%.1f")
+    "ICV Maximo"    (NumberColumn, format="%.1f")
+    "Registros"     (NumberColumn, format="%d")
+
+  Chart title (bar chart): "Top 10 por ICV medio"
+  Axis labels:
+    x-axis : "ICV Medio"
+    y-axis : ""  (empty, corredor names)
+  Color axis: "icv_maximo" → colorscale "Reds"
+  Colorbar title: "ICV Max"
+  Chart height: 380
+
+  st.caption (IVC ranking):
+    "Ranking complementario por IVC: intensidad promedio / {capacidad_base} veh/h.
+     Se calcula con limpieza y agrupacion alineadas con la validacion en Colab."
+    [capacidad_base default = 2500 veh/h from config ivc.capacidad_base]
+
+  IVC dataframe column labels:
+    "Rank"          (NumberColumn, format="%d")
+    "Corredor"      (text)
+    "IVC Medio"     (NumberColumn, format="%.3f")
+    "Velocidad"     (NumberColumn, format="%.1f km/h")
+    "Intensidad"    (NumberColumn, format="%.0f veh/h")
+    "Perdida Vel."  (NumberColumn, format="%.3f")
+    "Registros"     (NumberColumn, format="%d")
+
+  IVC chart title: "Top {N} por IVC promedio"
+  IVC x-axis title: "Indice Volumen/Capacidad (Promedio)"
+  IVC y-axis title: ""
+  IVC colorbar: "Nivel\nSaturacion"
+  IVC colorscale: "Turbo"
+  IVC chart height: 520
+  IVC text format: "%{text:.3f}" (outside)
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 2 — COMUNAS
+────────────────────────────────────────────────────────────────────────────────
+  st.header  : "Comunas con Mayor Presion Vehicular"
+  st.caption : "Filtros para análisis por comuna"
+
+  Selectbox 1 label : "Franja horaria"
+  Selectbox 1 help  : "Selecciona una franja para filtrar los datos"
+  Selectbox 1 options: ["Todas", "madrugada", "manana", "mediodia", "tarde", "noche"]
+
+  Selectbox 2 label : "Día de semana"
+  Selectbox 2 help  : "Selecciona un día para filtrar los datos"
+  Selectbox 2 options: ["Todos", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes",
+                        "Sabado", "Domingo"]
+
+  Chart title: "Comunas - ICV en hora pico"
+  Axis labels:
+    x-axis : "ICV Medio"
+    y-axis : ""
+  Colorscale: "Oranges"
+  Color axis: hidden (coloraxis_showscale=False)
+  Chart height: 320
+  Text format: "%{text:.1f}" (outside)
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 3 — HOTSPOTS
+────────────────────────────────────────────────────────────────────────────────
+  st.header : "Hotspots de Congestion"
+
+  Selectbox label: "Filtrar Hotspots por Comuna"
+  Selectbox help : "Selecciona una comuna para ver sus hotspots"
+
+  st.caption (dynamic):
+    "Definicion: zonas con velocidad <= P{vel_pct} (velocidad baja)
+     e intensidad >= P{int_pct} (flujo alto) - {n_hotspots:,} zonas criticas detectadas"
+    [vel_pct = hotspot_velocidad_pct from config, default 30]
+    [int_pct = hotspot_intensidad_pct from config, default 70]
+
+  Sample used: min(5000, len(hotspots)) rows, random_state=42
+
+  Chart title: "Hotspots: Intensidad vs Velocidad (color = ICV)"
+  Axis labels:
+    x-axis : "Intensidad (veh/h)"
+    y-axis : "Velocidad (km/h)"
+  Color metric: "ICV"
+  Colorscale: "RdYlGn_r"
+  Opacity: 0.5
+  Chart height: 420
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 4 — PATRONES TEMPORALES
+────────────────────────────────────────────────────────────────────────────────
+  st.header : "Patrones Temporales"
+
+  Selectbox label: "Filtrar Patrones por Comuna"
+  Selectbox help : "Selecciona una comuna para ver sus patrones temporales"
+
+  Chart title: "ICV promedio por hora del dia"
+  Axis labels:
+    x-axis : "Hora (0-23)"
+    y-axis : "ICV promedio"
+  x-axis tickmode: linear, tick0=0, dtick=1
+  Chart height: 380
+
+  Trace name: "ICV medio"
+  Line color: "#e74c3c"
+  Line width: 2.5
+  Mode: lines+markers
+
+  Vertical rect annotations:
+    Pico AM: annotation_text="Pico AM",  position="top left",
+             fillcolor="rgba(231,76,60,0.12)"
+             x0=min(pico_manana)-0.5, x1=max(pico_manana)+0.5
+             [pico_manana default from config: [7, 8]]
+    Pico PM: annotation_text="Pico PM",  position="top left",
+             fillcolor="rgba(231,76,60,0.12)"
+             x0=min(pico_tarde)-0.5, x1=max(pico_tarde)+0.5
+             [pico_tarde default from config: [17, 18]]
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 5 — TENDENCIA METRO
+────────────────────────────────────────────────────────────────────────────────
+  st.header : "Tendencia Pasajeros Metro (2014-2021)"
+
+  Chart title: "Evolucion de pasajeros movilizados en el Metro de Medellin"
+  Axis labels:
+    x-axis : "Periodo"
+    y-axis : "Pasajeros movilizados"
+  Color: "#2980b9"
+  Line width: 2.5
+  Markers: True
+  Chart height: 380
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 6 — MAPA DE CALOR VIAL
+────────────────────────────────────────────────────────────────────────────────
+  st.header : "Mapa de Calor Vial"
+
+  Selectbox label: "Filtrar Mapa por Comuna"
+  Selectbox help : "Selecciona una comuna para ver el mapa filtrado"
+
+  Spinner text: "Cargando mapa oficial de Medellin..."
+  Info placeholder: "Preparando cartografia oficial y trazas viales optimizadas..."
+
+  Map title: "Comunas oficiales de Medellin y corredores observados"
+  Map style: carto-positron
+  Map center:
+    lat_centro : 6.2442  (default)
+    lon_centro : -75.5812 (default)
+    zoom       : 11 (default)
+  Choropleth opacity: 0.38
+  Marker line width: 1.2
+  Marker line color: "#243447"
+  Hovertemplate: "%{location} - %{customdata[0]}"
+
+  Commune labels trace name: "16 comunas oficiales"
+  Text font size (commune labels): 11, color "#14213d"
+  Text font size (corridor labels): 11, color "#1f2933"
+  Corridor line width: 3.2
+  Legend title: "Comunas y corredores"
+  Chart height: 620
+  MAX_MAP_POINTS: 50,000
+
+  st.caption:
+    "Las 16 comunas se pintan con la geometria oficial de Medellin y quedan siempre marcadas.
+     Los corredores se dibujan con segmentos oficiales de la malla vial municipal."
+
+  Commune color palette (16 colors, cycling):
+    #e76f51, #2a9d8f, #e9c46a, #f4a261,
+    #457b9d, #8d99ae, #ef476f, #06d6a0,
+    #118ab2, #ffd166, #8338ec, #3a86ff,
+    #fb8500, #90be6d, #577590, #f94144
+
+  Corridor color palette: px.colors.qualitative.Dark24
+
+  Ciclorrutas expander title: "Red de Ciclorrutas"
+  Ciclorrutas pie chart title: "Tramos por estado"
+  Ciclorrutas pie colorscale: ["#27ae60", "#f39c12", "#8e44ad"]
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 7 — VELOCIDAD Y FLUJO
+────────────────────────────────────────────────────────────────────────────────
+  st.header  : "Velocidad y Flujo: Análisis de Congestión"
+  st.caption :
+    "Identificación de puntos con baja velocidad Y alto flujo simultáneamente.
+     Estos son los principales cuellos de botella del sistema."
+
+  Selectbox 1 label: "Filtrar por Comuna"
+  Selectbox 1 help : "Selecciona una comuna para filtrar datos"
+  Selectbox 2 label: "Filtrar por Corredor"
+  Selectbox 2 help : "Selecciona un corredor para filtrar datos"
+
+  Criticality classification:
+    "Crítico (Baja vel + Alto flujo)" — velocidad <= P30 AND intensidad >= P70
+    "Alto flujo"                      — intensidad >= P70
+    "Baja velocidad"                  — velocidad <= P30
+    "Normal"                          — all others
+  Threshold P30 (velocidad), P70 (intensidad) — computed dynamically from filtered data
+
+  Color map:
+    "Crítico (Baja vel + Alto flujo)": "#d62728"  (red)
+    "Alto flujo"                     : "#ff7f0e"  (orange)
+    "Baja velocidad"                 : "#f7c948"  (yellow)
+    "Normal"                         : "#2ca02c"  (green)
+
+  KPI row (4 columns):
+    "Velocidad promedio"   : "{vel_prom:.1f} km/h"
+    "Intensidad promedio"  : "{int_prom:.0f} veh/h"
+    "Puntos críticos"      : "{criticos:,} ({pct_criticos:.1f}%)"
+    "ICV promedio"         : "{icv_prom:.1f}"
+
+  Scatter chart title: "Análisis de Velocidad vs Flujo Vehicular"
+  Axis labels:
+    x-axis : "Intensidad (veh/h)"
+    y-axis : "Velocidad (km/h)"
+  Legend label: "Clasificación"
+  Reference line labels:
+    horizontal: "P30 Velocidad ({vel_p30:.1f} km/h)"   [dashed, gray, right]
+    vertical  : "P70 Intensidad ({int_p70:.0f} veh/h)"  [dashed, gray, top]
+  Opacity: 0.6
+  Chart height: 500
+
+  Table heading: "### Datos detallados (primeras 50 filas)"
+  Table columns displayed: corredor, nombre_comuna, velocidad_km_h, intensidad, icv, hora, criticidad
+  Table column labels:
+    "Velocidad (km/h)"  (format="%.1f")
+    "Intensidad (veh/h)"(format="%.0f")
+    "ICV"               (format="%.1f")
+    "Hora"              (format="%d:00")
+    "Clasificación"
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 8 — ANOMALÍAS DE CONGESTIÓN
+────────────────────────────────────────────────────────────────────────────────
+  st.header : "Anomalías de Congestión Vial"
+
+  Selectbox label: "Filtrar Anomalías por Comuna"
+  Selectbox help : "Selecciona una comuna para ver sus anomalías"
+
+  st.caption:
+    "Detección combinada: Z-Score rodante · IQR por franja · Degradación de velocidad
+     · Isolation Forest · DBSCAN espaciotemporal"
+
+  Warning (when anomalies.csv missing):
+    "El archivo anomalies.csv aún no existe. Puedes generarlo ahora directamente
+     desde el dashboard sin necesidad de re-ejecutar el pipeline completo."
+
+  Anomaly sample size options (radio):
+    "Rápido  — 10 000 registros (~15 s)"     → 10,000
+    "Normal  — 30 000 registros (~45 s)"     → 30,000  [default]
+    "Completo — 60 000 registros (~90 s)"    → 60,000
+    "Máximo  — todos ({n_total:,} registros, puede ser muy lento)" → 0
+
+  Button label: "🔍 Generar anomalías ahora"
+  Spinner text: "Ejecutando detección de anomalías (Z-Score · IQR · Speed-drop ·
+                 Isolation Forest · DBSCAN)… Esto puede tardar hasta 2 min."
+  Success message: "✅ anomalies.csv generado correctamente. Recargando sección…"
+
+  KPI cards (anomaly section):
+    "Anomalías en vista"     : "{total_anom:,}"
+    "Nivel CRÍTICO"          : "{n_criticos:,}" delta="{pct}% del total"
+    "Corredor más crítico"   : top corridor name
+    "Hora con más picos"     : "{hora_pico_anom:00d}:00 h"
+
+  Subheader: "Concentración horaria de anomalías (CRÍTICO + ALTO)"
+  Heatmap title: "Frecuencia de anomalías CRÍTICAS y ALTAS por hora y día"
+  Heatmap axis labels:
+    x-axis: "Día de semana"
+    y-axis: "Hora del día"
+    color : "Anomalías"
+  Heatmap colorscale: "RdYlGn_r"
+  Colorbar title: "Cantidad"
+  Heatmap height: 520
+  x-axis: side="top"
+
+  Subheader: "Alertas recientes — Top 50 por Anomaly Score"
+  Table row styling:
+    CRÍTICO  → background #ffd6d6, text #7b0000
+    ALTO     → background #ffe8cc, text #7a3900
+    MODERADO → background #fffac7, text #5a4a00
+  Table column labels:
+    "Anomaly Score" (ProgressColumn, min=0, max=100, format="%.1f")
+    "Velocidad (km/h)" (format="%.1f")
+    "Intensidad (veh/h)" (format="%.0f")
+    "ICV"               (format="%.1f")
+    "Hora"              (format="%d:00")
+
+  Expander title: "Desglose por detector"
+  Detector labels:
+    z_score_anomaly           → "Z-Score rodante"
+    iqr_anomaly               → "IQR franja horaria"
+    speed_drop_anomaly        → "Caída de velocidad"
+    isolation_forest_anomaly  → "Isolation Forest"
+    dbscan_anomaly            → "DBSCAN espaciotemporal"
+
+  Subheader: "📋 Recomendaciones"
+  st.caption (recommendations section):
+    "Derivadas del análisis de ICV, hotspots y anomalías detectadas sobre
+     424 772 registros de julio 2020 · 49 corredores · 10 comunas."
+
+  NIVEL CRÍTICO card (red #ffd6d6, border #d62728):
+    Title: "🔴 NIVEL CRÍTICO — Actuar de inmediato"
+    Rows:
+      Calle 30A          → "Gestión semafórica urgente (vel. 11 km/h · ICV 52)"
+      Colombia           → "Rutas alternas + carril bus exclusivo franja tarde"
+      Avenida 80 / Belén → "Refuerzo de flota Metroplús + señalización dinámica"
+      Avenida Oriental   → "Coordinación semafórica + rutas alternas al centro"
+
+  NIVEL ALTO card (orange #ffe8cc, border #ff7f0e):
+    Title: "🟠 NIVEL ALTO — Planificar a 6 meses"
+    Rows:
+      Carrera 65                     → "Ciclovía + semáforos coordinados con Colombia / San Juan"
+      Calle 65 / Calle 71 (Robledo) → "Infraestructura ciclista hacia el centro"
+      Autopista Norte                → "Redistribución anticipada hacia Regional Paralela"
+      Avenida El Poblado             → "Monitoreo continuo de anomalías (mayor recuento: 901)"
+
+  COMUNAS A PRIORIZAR card (blue #dbeafe, border #2563eb):
+    Title: "🔵 COMUNAS A PRIORIZAR"
+    Rows:
+      Laureles Estadio → "Mayor concentración de hotspots (4 corredores en top-10)"
+      Belén            → "ICV pico más alto · mayor población de Medellín (197 593 hab.)"
+      Robledo          → "Ratio veh/hab. alto · sin alternativas modales actuales"
+      La Candelaria    → "Centro histórico · 11 803 registros en hora pico"
+
+  Final caption:
+    "⏱ Ventana clave: martes–jueves · 14 h – 20 h concentra el 37,8 % de todos los
+     eventos de congestión simultánea del sistema. Cualquier medida de gestión de demanda
+     (teletrabajo escalonado, precios dinámicos de parqueo, refuerzo de transporte público)
+     en esa franja impacta directamente el indicador más crítico."
+
+────────────────────────────────────────────────────────────────────────────────
+SEVERITY COLOR MAP
+────────────────────────────────────────────────────────────────────────────────
+  CRÍTICO  : #d62728
+  ALTO     : #ff7f0e
+  MODERADO : #f7c948
+  NORMAL   : #2ca02c
+
+────────────────────────────────────────────────────────────────────────────────
+DAY LABELS MAP
+────────────────────────────────────────────────────────────────────────────────
+  1 → Lun
+  2 → Mar
+  3 → Mié
+  4 → Jue
+  5 → Vie
+  6 → Sáb
+  7 → Dom
+
+────────────────────────────────────────────────────────────────────────────────
+GLOBAL CONSTANTS (hardcoded in code)
+────────────────────────────────────────────────────────────────────────────────
+  CACHE_TTL                    : 3600 (seconds)
+  GEOJSON_SIMPLIFY_TOLERANCE   : 0.001
+  CORRIDOR_SIMPLIFY_TOLERANCE  : 0.00035
+  MAX_MAP_POINTS               : 50,000
+  COMUNA_FILTER_ALL            : "Todas"
+  CORRIDOR_FILTER_ALL          : "Todos"
+  Default sample for anomaly detection in dashboard: 30,000 rows
+  Max anomaly detection run (dashboard button): 30,000 rows (configurable)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 2 — master.csv STATISTICS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+FILE: data/processed/master.csv
+
+SHAPE
+  Rows    : 424,772
+  Columns : 35
+
+COLUMNS (full list)
+  carril, fecha_trafico, fecha, hora, dia, dia_num, mes_num, mes, ano,
+  velocidad_km_h, corredor, sentido, operacion, intensidad, categoria_1,
+  categoria_2, categoria_3, ocupacion, tipo_subsistema, longitud, latitud,
+  identificador_f_v, comuna, codigo_comuna, nombre_comuna, es_fin_semana,
+  franja_horaria, es_hora_pico, poblacion_2019, aforo_medio, simm_vel_media,
+  simm_int_media, simm_lat, simm_lon, icv
+
+DATE RANGE
+  fecha_trafico : 2020-07-01 00:00:00  →  2020-07-31 23:00:00
+  fecha         : 2020-07-01 00:00:00  →  2020-07-31 00:00:00
+  [Single month: July 2020]
+
+UNIQUE CORREDORES: 49
+  Autopista Norte, Autopista Sur, Avenida 33, Avenida 80, Avenida Bolivariana,
+  Avenida El Poblado, Avenida Ferrocarril, Avenida Guayabal, Avenida Las Palmas,
+  Avenida Las Vegas, Avenida Oriental, Avenida Regional, Calle 10, Calle 12 Sur,
+  Calle 3 Sur, Calle 30, Calle 30A, Calle 31, Calle 34, Calle 35, Calle 4 Sur,
+  Calle 41 - Los Huesos, Calle 48, Calle 5, Calle 52 - La Playa,
+  Calle 55 - La Iguana, Calle 57 - Argentina, Calle 65, Calle 66, Calle 71,
+  Calle 73, Calle 80, Calle 9 Sur - Los Balsos, Carrera 37, Carrera 43C,
+  Carrera 45, Carrera 57 - Avenida Ferrocarril, Carrera 65, Carrera 70,
+  Carrera 76, Colombia, Loma El Tesoro, Regional Paralela, San Juan,
+  Transversal 78, Transversal Inferior, Transversal Superior,
+  Vía al Mar, Vía al Túnel de Occidente
+
+UNIQUE COMUNAS: 15
+  05 - Castilla
+  07 - Robledo
+  10 - La Candelaria
+  100 - Sistema vial del río
+  101 - Sistema vial del río
+  102 - Sistema vial del río
+  11 - Laureles Estadio
+  12 - La America
+  14 - El Poblado
+  15 - Guayabal
+  16 - Belen
+  5 - Castilla
+  60 - Corregimiento de San Cristóbal
+  99 - Sistema vial del río  (two variants with encoding differences)
+
+UNIQUE FRANJAS HORARIAS: 5
+  madrugada, manana, mediodia, noche, tarde
+
+UNIQUE DIA_NUM: 7 (1 through 7)
+
+────────────────────────────────────────────────────────────────────────────────
+ICV (Índice de Criticidad Vial) — column name "icv" (lowercase)
+────────────────────────────────────────────────────────────────────────────────
+  Mean  : 36.3007
+  Std   : 8.6590
+  Min   : 0.01
+  Max   : 70.82
+  P25   : 30.93
+  P50   : 36.00
+  P75   : 41.45
+
+────────────────────────────────────────────────────────────────────────────────
+velocidad_km_h
+────────────────────────────────────────────────────────────────────────────────
+  Mean  : 28.0636 km/h
+  Std   : 14.5824 km/h
+  Min   : 1.0 km/h
+  Max   : 100.0 km/h
+
+────────────────────────────────────────────────────────────────────────────────
+intensidad (veh/h)
+────────────────────────────────────────────────────────────────────────────────
+  Mean  : 295.2111 veh/h
+  Std   : 348.4919 veh/h
+
+────────────────────────────────────────────────────────────────────────────────
+ICV MEAN BY franja_horaria
+────────────────────────────────────────────────────────────────────────────────
+  madrugada : 32.6206
+  manana    : 35.7366
+  mediodia  : 38.2362
+  noche     : 36.4932
+  tarde     : 39.1244
+  [Highest: tarde (39.12) | Lowest: madrugada (32.62)]
+
+────────────────────────────────────────────────────────────────────────────────
+ICV MEAN BY dia_num (1=Monday ... 7=Sunday)
+────────────────────────────────────────────────────────────────────────────────
+  dia_num 1 (Lun) : 36.2405
+  dia_num 2 (Mar) : 37.6569
+  dia_num 3 (Mié) : 37.7372
+  dia_num 4 (Jue) : 37.9974
+  dia_num 5 (Vie) : 35.5628
+  dia_num 6 (Sáb) : 35.3099
+  dia_num 7 (Dom) : 33.1810
+  [Highest: Thursday (37.997) | Lowest: Sunday (33.181)]
+
+────────────────────────────────────────────────────────────────────────────────
+TOP 5 HORAS BY ICV MEAN (hour with highest average criticality)
+────────────────────────────────────────────────────────────────────────────────
+  Hora 17 (5 PM) : 39.5140  [#1 — peak evening congestion]
+  Hora 16 (4 PM) : 39.2454
+  Hora 18 (6 PM) : 39.1503
+  Hora 15 (3 PM) : 38.9561
+  Hora 14 (2 PM) : 38.7578
+  [Hours 14-18 span the afternoon peak window]
+
+SAMPLE ROW (first record)
+  carril         : XC-1-BOL-65-ENT:ORI-OCC
+  fecha_trafico  : 2020-07-01 00:00:00
+  hora           : 0
+  dia            : Miercoles
+  dia_num        : 3
+  corredor       : Avenida Bolivariana
+  sentido        : EW
+  operacion      : interrumpido
+  velocidad_km_h : 27
+  intensidad     : 148
+  categoria_1    : 136
+  categoria_2    : 9
+  categoria_3    : 3
+  ocupacion      : 15
+  tipo_subsistema: ARS
+  franja_horaria : madrugada
+  es_fin_semana  : False
+  es_hora_pico   : False
+  poblacion_2019 : 123,185
+  simm_vel_media : 43.1667 km/h
+  simm_int_media : 24.6667 veh/h
+  simm_lat       : 6.246546
+  simm_lon       : -75.582638
+  icv            : 35.70
+  nombre_comuna  : Laureles Estadio
+  codigo_comuna  : 11
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 3 — anomalies.csv STATISTICS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+FILE: data/processed/anomalies.csv
+STATUS: EXISTS
+
+SHAPE
+  Rows    : 8,059
+  Columns : 44
+
+TOTAL ANOMALOUS RECORDS: 8,059
+
+────────────────────────────────────────────────────────────────────────────────
+SEVERITY BREAKDOWN (column: severity_level)
+────────────────────────────────────────────────────────────────────────────────
+  MODERADO : 7,648 rows  (94.90 %)
+  ALTO     :   372 rows  ( 4.62 %)
+  CRÍTICO  :    39 rows  ( 0.48 %)
+
+────────────────────────────────────────────────────────────────────────────────
+TOP 5 CORREDORES BY ANOMALY COUNT
+────────────────────────────────────────────────────────────────────────────────
+  1. Avenida El Poblado : 901
+  2. Avenida Las Vegas  : 847
+  3. Avenida Oriental   : 589
+  4. Autopista Norte    : 584
+  5. Avenida Regional   : 496
+
+────────────────────────────────────────────────────────────────────────────────
+TOP 5 COMUNAS BY ANOMALY COUNT
+────────────────────────────────────────────────────────────────────────────────
+  1. 14 - El Poblado            : 2,301
+  2. 11 - Laureles Estadio      : 1,586
+  3. 10 - La Candelaria         : 1,265
+  4. 99 - Sistema vial del río  :   904
+  5. 05 - Castilla              :   669
+
+────────────────────────────────────────────────────────────────────────────────
+DETECTOR BREAKDOWN (flag columns — count where True / % of all anomaly rows)
+────────────────────────────────────────────────────────────────────────────────
+  z_score_anomaly           : 190 flagged  ( 2.36 %)
+  iqr_anomaly               : 145 flagged  ( 1.80 %)
+  speed_drop_anomaly        : 6,713 flagged (83.30 %)  [dominant detector]
+  isolation_forest_anomaly  : 1,493 flagged (18.53 %)
+  dbscan_anomaly            : 0 flagged    ( 0.00 %)
+
+NOTE: rows can be flagged by multiple detectors. The anomaly_score and
+      severity_level aggregate all detector signals.
+
+ADDITIONAL COLUMNS IN anomalies.csv (beyond master.csv columns):
+  z_score_anomaly, iqr_anomaly, speed_drop_anomaly, speed_drop_pct,
+  isolation_forest_anomaly, isolation_score, dbscan_anomaly,
+  anomaly_score, severity_level
+
+SAMPLE ROW (row 0):
+  carril                   : XC-1-AV80-35-ENT:SUR-NOR
+  hora                     : 17
+  dia                      : Domingo
+  dia_num                  : 7
+  mes                      : Julio
+  corredor                 : Avenida 80
+  sentido                  : SN
+  operacion                : seminterrumpido
+  intensidad               : 277
+  velocidad_km_h           : 28
+  franja_horaria           : tarde
+  es_hora_pico             : True
+  es_fin_semana            : True
+  z_score_anomaly          : False
+  iqr_anomaly              : False
+  speed_drop_anomaly       : True
+  speed_drop_pct           : -36.36 %
+  isolation_forest_anomaly : False
+  isolation_score          : -0.4993
+  dbscan_anomaly           : False
+  anomaly_score            : 36.0
+  severity_level           : MODERADO
+  icv                      : 34.38
+  nombre_comuna            : Laureles Estadio
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 4 — pasajeros_clean.csv STATISTICS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+FILE: data/processed/pasajeros_clean.csv
+STATUS: EXISTS
+
+SHAPE
+  Rows    : 76
+  Columns : 22
+
+COLUMNS
+  ano, semestre, num_mes, mes, sem_ao, l_a_pax_mov, l_b_pax_mov, l_k_pax_mov,
+  l_j_pax_mov, l_h_pax_mov, l_m_pax_mov, l_l_pax_mov, l_ta_pax_mov,
+  l_1_pax_mov, l_2_pax_mov, c_3_pax_mov, c6_pax_mov, lnea_o, ao_mes,
+  orden, total_pax, fecha_periodo
+
+DATE RANGE
+  fecha_periodo : 2014-01-01  →  2021-12-01
+  ano range     : 2014 – 2021
+  Months covered: enero through diciembre (all 12 months)
+
+────────────────────────────────────────────────────────────────────────────────
+total_pax (total passengers per period)
+────────────────────────────────────────────────────────────────────────────────
+  Min    :     88,934.54
+  Max  :  1,255,986.53
+  Mean :    880,518.24
+  Sum  : 66,919,386.52  (all periods combined)
+
+────────────────────────────────────────────────────────────────────────────────
+TOTAL PASSENGERS BY YEAR (sum of total_pax per ano)
+────────────────────────────────────────────────────────────────────────────────
+  2014 :  1,516,332     [2 semesters only]
+  2015 :  1,560,891     [2 semesters only]
+  2016 : 10,898,357     [monthly data starts]
+  2017 : 12,321,605
+  2018 : 12,418,490
+  2019 : 13,355,163     [peak year — pre-COVID]
+  2020 :  6,014,096     [COVID-19 impact, -54.97% vs 2019]
+  2021 :  8,834,453     [recovery, +46.9% vs 2020]
+
+YEAR-OVER-YEAR CHANGES (approximate):
+  2014→2015 : +44,559   (+2.9%)   [semester basis]
+  2015→2016 : +9,337,466          [data granularity shift: semester→monthly]
+  2016→2017 : +1,423,248 (+13.1%)
+  2017→2018 : +96,885   (+0.8%)
+  2018→2019 : +936,673  (+7.5%)
+  2019→2020 : -7,341,067 (-55.0%) [COVID-19 pandemic collapse]
+  2020→2021 : +2,820,357 (+46.9%) [partial recovery]
+
+────────────────────────────────────────────────────────────────────────────────
+METRO LINE PASSENGER STATS (individual line columns, all periods)
+────────────────────────────────────────────────────────────────────────────────
+  l_a_pax_mov  (Línea A):  min=105.54     max=761,433    mean=532,407.80   sum=40,462,992.92
+  l_b_pax_mov  (Línea B):  min=60.66      max=112,064    mean=84,039.85    sum=6,387,028.61
+  l_k_pax_mov  (Línea K):  min=16.41      max=25,589     mean=18,643.40    sum=1,416,898.59
+  l_j_pax_mov  (Línea J):  min=10.78      max=18,815     mean=13,002.20    sum=988,166.86
+  l_h_pax_mov  (Línea H):  min=1.04       max=2,509      mean=1,728.20     sum=107,148.25
+  l_m_pax_mov  (Línea M):  min=6.47       max=8,608      mean=5,793.65     sum=202,777.71
+  l_l_pax_mov  (Línea L):  min=1.29       max=4,298      mean=1,542.69     sum=103,360.25
+  l_ta_pax_mov (Línea TA): min=17.38      max=61,387     mean=34,481.82    sum=2,413,727.20
+  l_1_pax_mov  (Línea 1):  min=70.03      max=128,168    mean=90,927.42    sum=6,910,483.91
+  l_2_pax_mov  (Línea 2):  min=14.40      max=18,082     mean=12,344.34    sum=938,170.20
+  c_3_pax_mov  (Cable 3):  min=17.28      max=44,511     mean=30,873.02    sum=2,346,349.77
+  c6_pax_mov   (Cable 6):  min=40.83      max=89,908     mean=61,082.66    sum=4,642,282.25
+  lnea_o       (Línea O):  min=2.265      max=12.512     mean=7.3706       sum=184.264
+
+NOTE: Very small minimum values (e.g. 1.04, 16.41) suggest some records contain
+      partial-period data or transitional months when lines were not yet operational.
+
+SAMPLE RECORDS (first 5 rows: ano, sem_ao, total_pax):
+  2014  2014-sem I   728,826.00
+  2014  2014-sem II  787,506.00
+  2015  2015-sem I   808,463.00
+  2015  2015-sem II  752,428.44
+  2016  2016-ene     811,799.51
+
+PERIOD LABELS (ao_mes format):
+  2014-sem I, 2014-sem II  (semesters)
+  2015-sem I, 2015-sem II  (semesters)
+  2016-ene through 2021-dic (monthly from 2016 onward)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CROSS-REFERENCE SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Dashboard page title    : "Movilidad Medellin"
+  Main title              : "Dashboard de Movilidad — Medellín"
+  Time period covered     : July 2020 (traffic data), 2014–2021 (metro passengers)
+  Total traffic records   : 424,772
+  Corredores monitored    : 49
+  Comunas in dataset      : 15 (code values), ~10 distinct urban communes
+  Anomalies detected      : 8,059
+  ICV city average        : 36.30 / 100
+  Peak congestion hour    : 17:00 (5 PM) — ICV mean 39.51
+  Peak congestion day     : Thursday (dia_num=4) — ICV mean 37.997
+  Peak congestion franja  : tarde — ICV mean 39.12
+  Critical window (caption): martes–jueves 14h–20h → 37.8% of simultaneous congestion events
+  Most anomalous corredor : Avenida El Poblado (901 anomaly records)
+  Most anomalous comuna   : 14 - El Poblado (2,301 anomaly records)
+  Dominant detector       : speed_drop (83.3% of anomaly records)
+  Metro peak year (pax)   : 2019 — 13,355,163 passengers
+  Metro COVID drop        : 2020 — 6,014,096 passengers (-55% vs 2019)
+
+================================================================================
+EXTRACT DONE
+================================================================================

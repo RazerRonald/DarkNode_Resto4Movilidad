@@ -1,0 +1,47 @@
+paths:
+  raw: data/raw
+  processed: data/processed
+  outputs: data/outputs
+  figures: data/outputs/figures
+
+files:
+  velocidad: velocidad_e_intensidad_vehicular_en_medellin.csv
+  aforos: Aforos_Vehiculares.csv
+  simm: simmtrafficdata.csv
+  pasajeros: Pasajeros_movilizados.csv
+  poblacion: proyecciones_de_poblacion_medellin_2019.csv
+  ciclorrutas: Ciclorrutas.csv
+
+eta:
+  hora_pico_manana: [7, 8]
+  hora_pico_tarde: [17, 18]
+  franjas:
+    madrugada: [0, 1, 2, 3, 4]
+    manana: [5, 6, 7, 8, 9, 10]
+    mediodia: [11, 12, 13]
+    tarde: [14, 15, 16, 17, 18]
+    noche: [19, 20, 21, 22, 23]
+
+icv:
+  peso_velocidad: 0.40
+  peso_intensidad: 0.35
+  peso_ocupacion: 0.25
+  peso_poblacion: 0.15
+  escala: 100
+
+ivc:
+  top_corredores: 15
+  capacidad_base: 2500
+  velocidad_libre: 60
+
+rankings:
+  top_corredores: 10
+  top_comunas: 5
+  hotspot_velocidad_pct: 30
+  hotspot_intensidad_pct: 70
+  solo_dias_habiles: true
+
+map:
+  lat_centro: 6.2442
+  lon_centro: -75.5812
+  zoom: 11

@@ -1,0 +1,290 @@
+================================================================================
+ AUDITORIA CUANTITATIVA — MOVILIDAD URBANA MEDELLIN
+ Fecha de ejecucion : 2026-04-23 09:11:29
+ Archivo fuente     : C:\Users\WinterOS\Documents\Dashboard\reto4\data\processed\master.csv
+ Total registros    : 424,772
+================================================================================
+
+================================================================================
+  OVERVIEW — Basic Dataset Statistics
+================================================================================
+
+Total registros        : 424,772
+Rango fechas           : 2020-07-01 00:00:00  →  2020-07-31 23:00:00
+Corredores únicos      : 49
+Comunas únicas         : 10
+Registros entre semana : 311,656  (73.4%)
+Registros fin de semana: 113,116  (26.6%)
+Registros hora pico    : 71,228  (16.8%)
+
+ICV global  —  mean=36.30  std=8.66  min=0.01  p25=30.93  p50=36.00  p75=41.45  max=70.82
+Velocidad   —  mean=28.1  std=14.6  min=1  max=100 km/h
+
+================================================================================
+  VELOCIDAD MEDIA POR FRANJA HORARIA
+================================================================================
+
+franja_horaria velocidad_media velocidad_std n_registros icv_medio
+         noche           27.35         14.15      89,102     36.49
+         tarde           27.49         14.56      89,987     39.12
+     madrugada           27.88         14.93      85,771     32.62
+      mediodia           28.53         14.80      53,857     38.24
+        manana           29.06         14.50     106,055     35.74
+
+================================================================================
+  ICV MEDIO POR DIA DE SEMANA (dia_num 1=Lunes … 7=Domingo)
+================================================================================
+
+dia_num       dia icv_medio icv_std velocidad_media n_registros
+      1     Lunes     36.24    8.80           27.94      56,524
+      2    Martes     37.66    8.75           27.25      55,164
+      3 Miercoles     37.74    8.71           27.25      66,883
+      4    Jueves     38.00    8.75           27.12      67,031
+      5   Viernes     35.56    8.49           28.88      66,054
+      6    Sabado     35.31    8.24           28.41      56,568
+      7   Domingo     33.18    7.70           29.76      56,548
+
+================================================================================
+  TOP 5 HORAS MAS CRITICAS (mayor ICV medio)
+================================================================================
+
+hora icv_medio n_registros velocidad_media intensidad_media
+  17     39.51      17,964           27.10           446.51
+  16     39.25      17,967           27.65           443.64
+  18     39.15      18,019           26.57           398.31
+  15     38.96      18,029           27.97           436.76
+  14     38.76      18,008           28.16           437.86
+
+================================================================================
+  PREGUNTA 1 — Top 10 Corredores Criticos (Entre Semana)
+================================================================================
+
+Filtro: es_fin_semana == False | Ranking: icv_medio DESC
+
+Rank | Corredor | ICV_medio | ICV_max | Vel_media | Int_media | Ocup_media | n_reg | %HoraPico
+
+   1  Calle 30A                                      ICV= 52.08  ICVmax= 64.41  vel= 11.3km/h  int=  109.0  ocup= 35.6  n=1,023  pico= 16.5%
+   2  Calle 65                                       ICV= 46.07  ICVmax= 62.51  vel= 15.5km/h  int=  126.7  ocup= 25.1  n=2,044  pico= 16.2%
+   3  Calle 35                                       ICV= 45.19  ICVmax= 64.05  vel= 17.2km/h  int=  193.0  ocup= 34.5  n=2,057  pico= 16.5%
+   4  Avenida 80                                     ICV= 44.05  ICVmax= 70.82  vel= 21.4km/h  int=  317.1  ocup= 28.6  n=16,491  pico= 16.6%
+   5  Colombia                                       ICV= 43.81  ICVmax= 67.42  vel= 18.0km/h  int=  336.5  ocup= 27.4  n=11,076  pico= 16.5%
+   6  Calle 71                                       ICV= 43.52  ICVmax= 54.28  vel= 21.3km/h  int=  416.5  ocup= 19.6  n=2,206  pico= 16.7%
+   7  Calle 41 - Los Huesos                          ICV= 43.29  ICVmax= 60.27  vel= 14.4km/h  int=  113.1  ocup= 32.6  n=3,995  pico= 16.5%
+   8  Calle 57 - Argentina                           ICV= 42.89  ICVmax= 51.95  vel= 22.3km/h  int=  293.0  ocup= 40.1  n=224  pico= 17.9%
+   9  Carrera 65                                     ICV= 41.99  ICVmax= 66.12  vel= 17.0km/h  int=  200.3  ocup= 17.0  n=21,132  pico= 16.6%
+  10  Calle 80                                       ICV= 41.74  ICVmax= 59.80  vel= 18.4km/h  int=  241.8  ocup= 14.5  n=4,766  pico= 16.7%
+
+--- Tabla completa ---
+rank              corredor icv_medio icv_maximo velocidad_media intensidad_media ocupacion_media n_registros pct_hora_pico
+   1             Calle 30A     52.08      64.41           11.27           109.05           35.57       1,023         16.52
+   2              Calle 65     46.07      62.51           15.48           126.71           25.08       2,044         16.24
+   3              Calle 35     45.19      64.05           17.23           193.02           34.45       2,057         16.53
+   4            Avenida 80     44.05      70.82           21.41           317.12           28.57      16,491         16.65
+   5              Colombia     43.81      67.42           17.97           336.48           27.43      11,076         16.55
+   6              Calle 71     43.52      54.28           21.34           416.52           19.61       2,206         16.68
+   7 Calle 41 - Los Huesos     43.29      60.27           14.43           113.12           32.59       3,995         16.50
+   8  Calle 57 - Argentina     42.89      51.95           22.32           293.05           40.11         224         17.86
+   9            Carrera 65     41.99      66.12           17.04           200.32           16.96      21,132         16.62
+  10              Calle 80     41.74      59.80           18.41           241.82           14.51       4,766         16.70
+
+================================================================================
+  PREGUNTA 2 — Comunas con Mayor Presion Vehicular en Hora Pico
+================================================================================
+
+Filtro: es_hora_pico == True | Ranking: icv_medio DESC (todas las comunas)
+
+Rank | Comuna | ICV_medio | ICV_max | Vel_media | Int_media | n_reg | Pob_2019 | Veh/1000hab
+
+   1  Robledo                              ICV= 43.66  ICVmax= 64.37  vel= 20.4km/h  int=  271.3  n=2,576  pob=176,810  veh/1000=1.53
+   2  Belen                                ICV= 42.77  ICVmax= 69.50  vel= 22.2km/h  int=  222.1  n=4,008  pob=197,593  veh/1000=1.12
+   3  Laureles Estadio                     ICV= 41.93  ICVmax= 63.38  vel= 18.4km/h  int=  230.0  n=11,984  pob=123,185  veh/1000=1.87
+   4  Castilla                             ICV= 40.30  ICVmax= 59.28  vel= 34.7km/h  int=  722.7  n=5,808  pob=151,785  veh/1000=4.76
+   5  La America                           ICV= 38.62  ICVmax= 58.20  vel= 23.4km/h  int=  248.8  n=932  pob=97,457  veh/1000=2.55
+   6  La Candelaria                        ICV= 37.53  ICVmax= 59.30  vel= 22.0km/h  int=  221.5  n=11,803  pob=85,783  veh/1000=2.58
+   7  Sistema vial del río                 ICV= 37.41  ICVmax= 56.80  vel= 38.1km/h  int=  772.4  n=7,151  pob=N/A  veh/1000=N/A
+   8  Corregimiento de San Cristóbal       ICV= 37.28  ICVmax= 45.35  vel= 18.3km/h  int=  223.1  n=495  pob=105,977  veh/1000=2.10
+   9  El Poblado                           ICV= 33.70  ICVmax= 58.73  vel= 32.5km/h  int=  249.0  n=18,888  pob=133,814  veh/1000=1.86
+  10  Guayabal                             ICV= 32.33  ICVmax= 49.18  vel= 34.7km/h  int=  367.6  n=3,012  pob=96,142  veh/1000=3.82
+
+--- Tabla completa ---
+rank                  nombre_comuna icv_medio icv_maximo velocidad_media intensidad_media n_registros poblacion_2019 vehiculos_por_1000hab
+   1                        Robledo     43.66      64.37           20.38           271.34       2,576     176,810.00                  1.53
+   2                          Belen     42.77      69.50           22.20           222.09       4,008     197,593.00                  1.12
+   3               Laureles Estadio     41.93      63.38           18.39           230.04      11,984     123,185.00                  1.87
+   4                       Castilla     40.30      59.28           34.66           722.67       5,808     151,785.00                  4.76
+   5                     La America     38.62      58.20           23.35           248.79         932      97,457.00                  2.55
+   6                  La Candelaria     37.53      59.30           22.01           221.46      11,803      85,783.00                  2.58
+   7           Sistema vial del río     37.41      56.80           38.14           772.39       7,151            N/A                   N/A
+   8 Corregimiento de San Cristóbal     37.28      45.35           18.35           223.07         495     105,977.00                  2.10
+   9                     El Poblado     33.70      58.73           32.46           248.98      18,888     133,814.00                  1.86
+  10                       Guayabal     32.33      49.18           34.70           367.60       3,012      96,142.00                  3.82
+
+================================================================================
+  PREGUNTA 3 — Zonas Baja Velocidad + Alto Flujo (Hotspots)
+================================================================================
+
+Umbral baja velocidad  : <= p30 = 19.0 km/h
+Umbral alto flujo      : >= p70 = 342.0 veh/h
+
+Registros que cumplen AMBAS condiciones: 23,443  (5.52% del total)
+
+Top 20 Hotspots por numero de eventos:
+
+Rank | Corredor | Comuna | n_eventos | Vel_media | Int_media | ICV_medio | %HoraPico
+
+   1  Colombia                                       Laureles Estadio                n=3,123  vel= 10.1km/h  int=  492.1  ICV= 52.95  pico= 19.6%
+   2  Carrera 65                                     Laureles Estadio                n=2,620  vel= 13.4km/h  int=  455.1  ICV= 50.45  pico= 21.6%
+   3  Avenida 80                                     Belen                           n=1,539  vel= 14.8km/h  int=  463.2  ICV= 56.56  pico= 16.8%
+   4  Autopista Norte                                Castilla                        n=1,491  vel= 16.1km/h  int=  678.1  ICV= 50.46  pico= 21.9%
+   5  Avenida Oriental                               La Candelaria                   n=1,393  vel= 15.4km/h  int=  425.9  ICV= 46.99  pico= 22.9%
+   6  Carrera 65                                     Belen                           n=1,189  vel= 16.2km/h  int=  502.0  ICV= 51.78  pico= 21.4%
+   7  Avenida El Poblado                             El Poblado                      n=1,087  vel= 10.0km/h  int=  441.2  ICV= 50.44  pico= 26.0%
+   8  San Juan                                       Laureles Estadio                n=1,020  vel= 14.7km/h  int=  445.2  ICV= 49.73  pico= 26.5%
+   9  Avenida El Poblado                             La Candelaria                   n=821  vel= 17.5km/h  int=  517.6  ICV= 45.67  pico= 22.0%
+  10  Avenida Bolivariana                            Laureles Estadio                n=727  vel= 11.6km/h  int=  441.5  ICV= 50.25  pico= 28.3%
+  11  Calle 71                                       Robledo                         n=639  vel= 16.7km/h  int=  579.2  ICV= 49.35  pico= 23.6%
+  12  Avenida 80                                     La America                      n=590  vel= 15.8km/h  int=  490.8  ICV= 51.78  pico= 17.8%
+  13  Autopista Sur                                  Sistema vial del río            n=588  vel= 15.0km/h  int=  608.0  ICV= 49.13  pico= 36.4%
+  14  Calle 80                                       Robledo                         n=553  vel= 16.3km/h  int=  443.5  ICV= 46.81  pico= 18.8%
+  15  Avenida 80                                     Laureles Estadio                n=510  vel= 17.5km/h  int=  510.3  ICV= 54.13  pico= 15.7%
+  16  Calle 52 - La Playa                            La Candelaria                   n=508  vel= 11.9km/h  int=  384.8  ICV= 52.21  pico= 18.7%
+  17  Calle 30                                       Belen                           n=486  vel= 17.0km/h  int=  519.8  ICV= 58.56  pico= 18.3%
+  18  Regional Paralela                              Sistema vial del río            n=452  vel= 15.7km/h  int=  566.8  ICV= 48.59  pico= 24.8%
+  19  Avenida Las Palmas                             El Poblado                      n=409  vel= 16.2km/h  int=  642.2  ICV= 43.95  pico= 23.2%
+  20  Calle 80                                       Castilla                        n=391  vel= 16.9km/h  int=  463.2  ICV= 49.13  pico= 22.3%
+
+--- Tabla completa ---
+rank            corredor        nombre_comuna n_eventos velocidad_media intensidad_media icv_medio hora_pico_pct
+   1            Colombia     Laureles Estadio     3,123           10.10           492.14     52.95         19.60
+   2          Carrera 65     Laureles Estadio     2,620           13.44           455.07     50.45         21.56
+   3          Avenida 80                Belen     1,539           14.81           463.22     56.56         16.76
+   4     Autopista Norte             Castilla     1,491           16.10           678.09     50.46         21.86
+   5    Avenida Oriental        La Candelaria     1,393           15.44           425.89     46.99         22.90
+   6          Carrera 65                Belen     1,189           16.23           501.97     51.78         21.45
+   7  Avenida El Poblado           El Poblado     1,087           10.04           441.24     50.44         26.03
+   8            San Juan     Laureles Estadio     1,020           14.66           445.21     49.73         26.47
+   9  Avenida El Poblado        La Candelaria       821           17.52           517.56     45.67         22.05
+  10 Avenida Bolivariana     Laureles Estadio       727           11.63           441.51     50.25         28.34
+  11            Calle 71              Robledo       639           16.69           579.25     49.35         23.63
+  12          Avenida 80           La America       590           15.78           490.79     51.78         17.80
+  13       Autopista Sur Sistema vial del río       588           14.96           607.96     49.13         36.39
+  14            Calle 80              Robledo       553           16.29           443.50     46.81         18.81
+  15          Avenida 80     Laureles Estadio       510           17.51           510.32     54.13         15.69
+  16 Calle 52 - La Playa        La Candelaria       508           11.86           384.78     52.21         18.70
+  17            Calle 30                Belen       486           16.97           519.84     58.56         18.31
+  18   Regional Paralela Sistema vial del río       452           15.73           566.82     48.59         24.78
+  19  Avenida Las Palmas           El Poblado       409           16.21           642.24     43.95         23.23
+  20            Calle 80             Castilla       391           16.89           463.25     49.13         22.25
+
+--- Distribucion de hotspot eventos por Franja Horaria ---
+franja_horaria n_eventos velocidad_media intensidad_media icv_medio pct_del_total
+         tarde     8,865           14.15           505.66     50.70         37.82
+         noche     5,165           14.16           474.46     51.91         22.03
+      mediodia     4,323           14.40           498.60     49.93         18.44
+        manana     4,045           14.77           526.49     48.21         17.25
+     madrugada     1,045           14.36           441.56     50.67          4.46
+
+================================================================================
+  PREGUNTA 4 — Zonas Prioritarias para Intervencion
+================================================================================
+
+Umbral p80 intensidad (entre semana): 528.0 veh/h
+Umbral alta poblacion (p67): 133,814 hab
+
+Resumen de categorias de intervencion:
+
+  Sin clasificar                :   31 corredores  (63.3%)
+  Transporte Sostenible         :   17 corredores  (34.7%)
+  Gestion Semafórica            :    1 corredores  (2.0%)
+
+--- Gestion Semafórica (1 corredores) ---
+  Corredor                                       ICV_med  Vel_med   Int_med    Pob_2019  %HoraPico
+  Calle 30A                                        52.08     11.3     109.0     197,593       16.5%
+
+--- Rutas Alternas (0 corredores) ---
+  Corredor                                       ICV_med  Vel_med   Int_med    Pob_2019  %HoraPico
+
+--- Transporte Sostenible (17 corredores) ---
+  Corredor                                       ICV_med  Vel_med   Int_med    Pob_2019  %HoraPico
+  Calle 65                                         46.07     15.5     126.7     176,810       16.2%
+  Avenida 80                                       44.05     21.4     317.1     152,467       16.6%
+  Calle 71                                         43.52     21.3     416.5     176,810       16.7%
+  Carrera 65                                       41.99     17.0     200.3     149,356       16.6%
+  Calle 80                                         41.74     18.4     241.8     163,342       16.7%
+  Calle 5                                          39.90     23.4     132.5     197,593       16.7%
+  Autopista Norte                                  38.75     36.6     684.2     151,785       16.7%
+  Calle 30                                         38.47     29.7     333.2     197,593       16.4%
+  Regional Paralela                                37.78     35.3     566.5     151,785       16.7%
+  Calle 9 Sur - Los Balsos                         37.17     19.0     209.3     133,814       17.9%
+  Calle 73                                         33.46     35.8     312.2     176,810       16.6%
+  Avenida Las Vegas                                33.31     32.4     216.2     133,814       16.9%
+  Transversal 78                                   32.97     38.3     344.4     151,785       16.7%
+  Avenida Las Palmas                               32.86     34.7     438.6     133,814       16.7%
+  Calle 4 Sur                                      31.16     31.5     117.8     133,814       16.2%
+  Carrera 43C                                      29.72     34.5     165.1     133,814       17.2%
+  Loma El Tesoro                                   23.41     52.5     297.8     133,814       17.7%
+
+--- Multiples Intervenciones (0 corredores) ---
+  Corredor                                       ICV_med  Vel_med   Int_med    Pob_2019  %HoraPico
+
+================================================================================
+  ANALISIS DE ANOMALIAS (anomalies.csv)
+================================================================================
+
+Total registros con anomalia: 8,059
+
+Severity breakdown:
+  MODERADO       : 7,648  (94.9%)
+  ALTO           : 372  (4.6%)
+  CRÍTICO        : 39  (0.5%)
+
+Anomaly type counts:
+  z_score_anomaly               : 190  (2.4%)
+  iqr_anomaly                   : 145  (1.8%)
+  speed_drop_anomaly            : 6,713  (83.3%)
+  isolation_forest_anomaly      : 1,493  (18.5%)
+  dbscan_anomaly                : 0  (0.0%)
+
+Top 20 Corredores por numero de anomalias:
+           corredor n_anomalias icv_medio velocidad_media intensidad_media anomaly_score_med ALTO CRÍTICO MODERADO
+ Avenida El Poblado         901     39.57           18.81           164.60             34.51   55       3      843
+  Avenida Las Vegas         847     35.00           28.73           182.11             33.70   18       7      822
+   Avenida Oriental         589     41.83           12.62           168.83             35.72   43       6      540
+    Autopista Norte         584     40.78           29.31           565.40             33.37   16       1      567
+   Avenida Regional         496     34.13           35.86           540.13             32.52    5       2      489
+         Avenida 80         420     48.74           15.85           316.98             36.12   47       3      370
+      Autopista Sur         401     39.21           29.63           586.84             34.10   21       1      379
+         Carrera 65         388     43.37           12.57           158.13             34.53   22       1      365
+           Colombia         307     46.54           10.77           298.13             34.76   10       4      293
+ Avenida Las Palmas         283     35.06           30.90           468.83             32.81    6       2      275
+           Calle 10         275     29.80           39.15           234.15             32.40    8       0      267
+Avenida Bolivariana         239     34.77           30.08           254.85             32.18    8       0      231
+         Avenida 33         236     40.40           14.02           163.99             33.74    4       0      232
+           San Juan         235     40.88           14.11           176.58             33.57    4       1      230
+   Avenida Guayabal         220     33.65           28.60           342.31             33.41    5       1      214
+Avenida Ferrocarril         207     31.96           31.01           246.08             32.33    2       1      204
+           Calle 30         184     40.27           29.03           278.74             33.03   11       0      173
+Calle 52 - La Playa         163     40.97            9.69           102.10             34.37    6       1      156
+  Regional Paralela         134     41.02           26.05           456.75             33.79    3       0      131
+           Calle 34          99     29.90           32.68            62.96             30.69    0       0       99
+
+Top Comunas por numero de anomalias:
+                 nombre_comuna n_anomalias icv_medio velocidad_media
+                    El Poblado       2,301     36.09           26.28
+              Laureles Estadio       1,586     41.99           16.80
+                 La Candelaria       1,265     37.84           19.56
+          Sistema vial del río         929     37.28           31.32
+                      Castilla         718     40.56           28.35
+                      Guayabal         370     31.57           31.67
+                         Belen         344     44.99           21.59
+                       Robledo         230     45.59           17.37
+                    La America          75     44.22           18.37
+Corregimiento de San Cristóbal          44     37.46           15.36
+
+Distribucion de anomalias por Franja Horaria:
+franja_horaria n_anomalias icv_medio
+        manana       1,952     38.15
+         tarde       1,718     41.66
+     madrugada       1,699     34.16
+         noche       1,675     38.90
+      mediodia       1,015     40.90
